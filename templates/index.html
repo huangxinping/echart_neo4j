@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+</head>
+<body>
+<div id="main" style="position: absolute; left: 0; right: 0; bottom: 0; top: 0"></div>
+<script type="text/javascript">
+    // based on prepared DOM, initialize echarts instance
+    var myChart = echarts.init(document.getElementById('main'));
+    myChart.showLoading();
+    $.get('/graph', function (webkitDep) {
+        myChart.hideLoading();
+
+        option = {
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                animation: false,
+                label: {
+                    position: 'right',
+                    formatter: '{b}'
+                },
+                draggable: true,
+                data: webkitDep.nodes.map(function (node, idx) {
+                    node.id = idx;
+                    return node;
+                }),
+                categories: webkitDep.categories,
+                force: {
+                    edgeLength: 5,
+                    repulsion: 20,
+                    gravity: 0.2
+                },
+                edges: webkitDep.links,
+                roam: true,
+                label: {
+                    show: true
+                },
+                edgeSymbol: ['circle', 'arrow']
+            }]
+        };
+
+        myChart.setOption(option);
+    });
+</script>
+</body>
+</html>
